@@ -10,6 +10,7 @@ import socket
 import pickle
 from blockchain import Blockchain
 import requests
+import socketio
 
 # The package requests is used in the 'hash_user_file' and 'retrieve_from hash' functions to send http post requests.
 # Notice that 'requests' is different than the package 'request'.
@@ -35,17 +36,29 @@ def decrypt_file(file_path, file_key):
 def encrypt_file(file_path, file_key):
     pyAesCrypt.encryptFile(file_path, file_path + ".aes",  file_key, app.config['BUFFER_SIZE'])
 
-def hash_user_file(user_file, file_key):
+def hash_user_file(user_file, file_key):   
     encrypt_file(user_file, file_key)
     encrypted_file_path = user_file + ".aes"
-    client = ipfshttpclient.connect('/dns/ipfs.infura.io/tcp/5001/https')
+
+    # Include your Infura API key in the headers
+    headers = {
+        "Authorization": "Bearer b2a4f441d8c14afb97a4bdca0281bbd7"  # Replace with your actual Infura API key  (Bearer )
+    }
+
+    client = ipfshttpclient.connect('/dns/ipfs.infura.io/tcp/5001/https', headers=headers)
     response = client.add(encrypted_file_path)
     file_hash = response['Hash']
     return file_hash
 
 
 def retrieve_from_hash(file_hash, file_key):
-    client = ipfshttpclient.connect('/dns/ipfs.infura.io/tcp/5001/https')
+    
+    # Include your Infura API key in the headers
+    headers = {
+        "Authorization": "Bearer b2a4f441d8c14afb97a4bdca0281bbd7"  # Replace with your actual Infura API key  (Bearer )
+    }
+
+    client = ipfshttpclient.connect('/dns/ipfs.infura.io/tcp/5001/https', headers=headers)
     file_content = client.cat(file_hash)
     file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], file_hash)
     user_file = open(file_path, 'ab+')

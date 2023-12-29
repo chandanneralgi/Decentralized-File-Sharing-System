@@ -42,12 +42,24 @@ def encrypt_file(file_path, file_key):
 def hash_user_file(user_file, file_key):
     encrypt_file(user_file, file_key)
     encrypted_file_path = user_file + ".aes"
+
+    # Include your Infura API key in the headers
+    headers = {
+        "Authorization": "Bearer b2a4f441d8c14afb97a4bdca0281bbd7"  # Replace with your actual Infura API key  (Bearer )
+    }
+
     client = ipfshttpclient.connect('/dns/ipfs.infura.io/tcp/5001/https')
     response = client.add(encrypted_file_path)
     file_hash = response['Hash']
     return file_hash
 
 def retrieve_from_hash(file_hash, file_key):
+
+    # Include your Infura API key in the headers
+    headers = {
+        "Authorization": "Bearer b2a4f441d8c14afb97a4bdca0281bbd7"  # Replace with your actual Infura API key  (Bearer )
+    }
+
     client = ipfshttpclient.connect('/dns/ipfs.infura.io/tcp/5001/https')
     file_content = client.cat(file_hash)
     file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], file_hash)
